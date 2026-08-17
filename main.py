@@ -41,12 +41,36 @@ def get_full_chain(chosen_course, course_map):
         return sorted_chain
         
     
+def get_whats_left(course_map):
+    completed_courses = set()
+    # user enters completed courses until they type 'done' if course isnt there it'll print not a valid course
+    while user_input := input("Enter your completed courses (or 'done' to finish): ").strip():
+        if user_input.lower() == 'done':
+            break
+        elif user_input in course_map:
+            completed_courses.add(user_input)
+            completed_courses.update(get_full_chain(user_input, course_map))
+        else:
+            print(f"{user_input} is not a valid course.")
+    
+    chosen_course = input("what course are you working towards? ")
+    if chosen_course not in course_map:
+        print(f"{chosen_course} is not a valid course.")
+        return []
+        
+    still_needed_courses = set(get_full_chain(chosen_course, course_map)) - completed_courses
+    still_needed_courses = sorted(still_needed_courses)  # sort the list alphabetically
+    return still_needed_courses
+        
+    
+    
     
 
 #print(load_json_file('data/courses.json'))
 
 json_data = load_json_file('data/courses.json')
 #print(fill_map(json_data))
-chosen_course = print_course_prerequisites(fill_map(json_data))
-print(get_full_chain(chosen_course, fill_map(json_data)))
+#chosen_course = print_course_prerequisites(fill_map(json_data))
+#print(get_full_chain(chosen_course, fill_map(json_data)))
+print(get_whats_left(fill_map(json_data)))
 
