@@ -6,7 +6,9 @@ A tool to visualize Washington State University Computer Science degree requirem
 Degree requirements are usually shown as flat lists, which makes it hard to see how courses actually depend on each other. This models them as a graph so students can see what's unlocked, what's blocking what, and plan their remaining semesters accordingly.
 
 ## Status
-🚧 In progress — starting with a static course/prerequisite dataset before building out graph logic and UI.
+ In progress — starting with a static course/prerequisite dataset before building out graph logic and UI.
+
+update 1: I converted the JSON into a map and allow the user to input a class, then get the full chain of prereqs from that class
 
 ## Data
 `data/courses.json` contains WSU CPT S core and upper-level courses with prerequisite relationships, pulled from the official course catalog.
