@@ -1,4 +1,5 @@
 import json
+from collections import deque
 
 # loads data from a json file 
 def load_json_file(file):
@@ -60,12 +61,41 @@ def get_whats_left(course_map):
         return []
         # get the needed courses by comparing the full chain of the course they're working towards to the full chain of completed courses and return the difference
     still_needed_courses = set(get_full_chain(chosen_course, course_map)) - completed_courses
-    still_needed_courses = sorted(still_needed_courses)  # sort the list alphabetically
+    full_order = topological_sort(course_map)
+    still_needed_courses = [c for c in full_order if c in still_needed_courses]
     return still_needed_courses
         
+def topological_sort(course_map):
+    # dictionary stores tthe class and num of prerequisites
+    in_degree  = {course: 0 for course in course_map}
+    #adds 1 to the prerequisite count for every prerequisite of a course in the course_map
+    for course in course_map:
+        for prereq in course_map[course]['prerequisites']:
+            in_degree[course] += 1
+            
+    # populated the queue with courses that have no prerequisites or have already been completed
+    queue = deque([c for c in course_map if in_degree[c] == 0])
+    sorted_courses = []
     
-    
-    
+    # loop through the queue and pop completed courses and add then to the sorted courses list
+    while queue:
+        course = queue.popleft()
+        sorted_courses.append(course)
+        # loop through the prereqs of each course and decrement the in_degree of the prereq when the course is found  in the prereqs
+        for prereq in course_map:
+            if course in course_map[prereq]['prerequisites']:
+                in_degree[prereq] -= 1
+                # if its zero add it to the queue so it can be popped and added to sorted
+                if in_degree[prereq] == 0:
+                    queue.append(prereq)
+        # if the length of sorted doesnt = course_map there has to be a cycle
+    if len(sorted_courses) != len(course_map):
+        print("There is a cycle in the prerequisites, topological sort not possible.")
+        return []
+    return sorted_courses
+        
+            
+                
 
 #print(load_json_file('data/courses.json'))
 
@@ -74,4 +104,4 @@ json_data = load_json_file('data/courses.json')
 #chosen_course = select_course(fill_map(json_data))
 #print(get_full_chain(chosen_course, fill_map(json_data)))
 print(get_whats_left(fill_map(json_data)))
-
+#print(topological_sort(fill_map(json_data)))
