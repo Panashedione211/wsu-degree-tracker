@@ -1,11 +1,14 @@
 from fastapi import FastAPI
 from courses import load_json_file, fill_map, topological_sort, get_whats_left
+from fastapi.middleware.cors import CORSMiddleware
 
 
 
 
 # create the FastAPI app
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware, allow_origins=["http://localhost:5173"], allow_methods=["*"], allow_headers=["*"])
 
 #loads courses from json file and fills the map with the data
 courses = fill_map(load_json_file("backend/data/courses.json"))
