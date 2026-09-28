@@ -1,21 +1,51 @@
 # WSU CS Degree Tracker
 
-A tool to visualize Washington State University Computer Science degree requirements as a dependency graph (DAG) — see prerequisite chains and track progress toward graduation.
+A full stack web app that visualizes Washington State University Computer Science degree requirements as an interactive graph. Students can see prerequisite chains, track what they've completed, and plan their path to graduation.
 
 ## Why
-Degree requirements are usually shown as flat lists, which makes it hard to see how courses actually depend on each other. This models them as a graph so students can see what's unlocked, what's blocking what, and plan their remaining semesters accordingly.
+Degree requirements are usually shown as flat lists, which makes it hard to see how courses actually depend on each other. This models them as a graph so students can see what's unlocked, what's blocking them, and plan their remaining semesters accordingly.
 
-## Status
- In progress — starting with a static course/prerequisite dataset before building out graph logic and UI.
+## Features
+- **Full prerequisite chain** — recursively finds every course needed to reach a target class
+- **What's left** — compare courses you've taken against a target class and get back only what you still need, in the order you should take them
+- **Topological sort** — orders all courses in a valid sequence that respects every prerequisite rule
+- **Interactive graph** — visualizes all courses and their connections as a node graph (in progress)
 
-update 1: I converted the JSON into a map and allow the user to input a class, then get the full chain of prereqs from that class
+## Tech Stack
+- **Backend:** Python, FastAPI, uvicorn
+- **Frontend:** React, Vite, React Flow, Tailwind CSS
+- **Data:** JSON (WSU CPT S course catalog — web scraping planned)
+
+## How to Run
+
+### Backend
+From the project root:
+```bash
+uvicorn backend.app:app --reload
+```
+Runs at `http://localhost:8000`. API docs at `http://localhost:8000/docs`.
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Runs at `http://localhost:5173`.
+
+## API Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/courses` | All courses |
+| GET | `/courses/sorted` | Courses in topological order |
+| GET | `/courses/graph` | Nodes and edges for graph display |
+| GET | `/courses/{course_id}` | Single course info |
 
 ## Data
-`data/courses.json` contains WSU CPT S core and upper-level courses with prerequisite relationships, pulled from the official course catalog.
+`backend/data/courses.json` contains WSU CPT S core and upper-level courses with prerequisite relationships.
 
-**Known limitation:** some WSU prerequisites are OR-conditions (e.g. CPT S 360 requires CPT S 260 *or* EE 234). This dataset currently models a single path per course for simplicity; true OR-logic support is a planned improvement.
+**Known limitation:** some WSU prerequisites are OR-conditions. This dataset currently models all prereqs as AND relationships. OR-logic support planned after web scraping is implemented.
 
-## Data Structure
 ```json
 {
   "course": "CPT S 122",
@@ -23,13 +53,15 @@ update 1: I converted the JSON into a map and allow the user to input a class, t
   "credits": 4
 }
 ```
-Completion status is intentionally left out of the base dataset — it's meant to be user-specific state (tracked in the app), not baked into the course data, so the tool works for any student.
-
-## Tech Stack
-TBD
 
 ## Roadmap
-- [ ] Model course data as a proper DAG
-- [ ] Build UI to visualize prerequisite chains
-- [ ] Add user-specific completion tracking
-- [ ] Support OR-logic prerequisites
+- [x] Full prerequisite chain lookup
+- [x] Compare taken courses vs target class
+- [x] Topological sort
+- [x] FastAPI backend with REST endpoints
+- [x] React Flow graph visualization
+- [ ] Click nodes to mark courses complete
+- [ ] Highlight available next courses
+- [ ] Hover tooltip with course details
+- [ ] Web scrape real WSU course data
+- [ ] Specialization pathway recommendations
